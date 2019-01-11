@@ -34,20 +34,21 @@ def flatten(arr):
     return [i for g in arr for i in g]
 
 
-def learn(lyrics, nb_lines, hide_words=False):
+def learn(lyrics, nb_lines, chosen_verses=None, hide_words=False):
     lines = [l for l in lyrics.split('\n') if len(l) > 0 and not l.startswith('#')]
-    groups = group_until(lines, '---')
+    verses = group_until(lines, '---')
 
-    if len(groups) > 1:
-        for i, g in enumerate(groups):
-            print i, g[0]
-        print
+    if not chosen_verses:
+        if len(verses) > 1:
+            for i, g in enumerate(verses):
+                print i, g[0]
+            print
 
-        chosen_groups = map(int, ask('Part of the song to learn (comma for several) ?').split(','))
-    else:
-        chosen_groups = [0]
+            chosen_verses = map(int, ask('Verse of the song to learn (comma for several) ?').split(','))
+        else:
+            chosen_verses = [0]
 
-    lines = flatten(map(lambda i: groups[i], chosen_groups))
+    lines = flatten(map(lambda i: verses[i], chosen_verses))
 
     while True:
         r = randint(0, len(lines) - nb_lines - 1)
@@ -74,10 +75,15 @@ def choose_file(question, directory=osp.abspath(osp.dirname(__file__))):
     return osp.join(directory, files[n - 1])
 
 
+def comma_sep_ints(ints):
+    return [int(i) for i in ints.split(',')]
+
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('filename', nargs='?')
     parser.add_argument('--nb-lines', default=2, type=int)
+    parser.add_argument('--verse', type=comma_sep_ints)
     args = parser.parse_args()
     if not args.filename:
         filename = choose_file('Which lyrics do you want to learn ? ')
@@ -86,6 +92,6 @@ if __name__ == '__main__':
     print 'Learning %s' % filename
     print
     try:
-        learn_from_file(filename, args.nb_lines, hide_words=True)
+        learn_from_file(filename, args.nb_lines, args.verse, hide_words=True)
     except KeyboardInterrupt:
         print('\nGood job 👍 See you later !')
