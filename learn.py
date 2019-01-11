@@ -5,11 +5,13 @@ import os.path as osp
 from random import randint
 import argparse
 
+
 def ask(question):
     res = None
     while not res:
         res = raw_input(question + ' ')
     return res
+
 
 def group_until(arr, sep):
     def _group_until(arr, sep):
@@ -24,17 +26,16 @@ def group_until(arr, sep):
 
     return list(_group_until(arr, sep))
 
-def transform(line, hide_words):
-    if hide_words:
-        line = ' '.join(map(lambda word: '*' * len(word) if randint(0, 0) == 1 else word, line.split(' ')))
-    return line
+
+def hide_words_randomly(line, hide_words):
+    return ' '.join(map(lambda word: '*' * len(word) if randint(0, 0) == 1 else word, line.split(' ')))
 
 
 def flatten(arr):
     return [i for g in arr for i in g]
 
 
-def learn(lyrics, nb_lines, chosen_verses=None, hide_words=False):
+def learn(lyrics, nb_lines, chosen_verses=None):
     lines = [l for l in lyrics.split('\n') if len(l) > 0 and not l.startswith('#')]
     verses = group_until(lines, '---')
 
@@ -52,9 +53,7 @@ def learn(lyrics, nb_lines, chosen_verses=None, hide_words=False):
 
     while True:
         r = randint(0, len(lines) - nb_lines - 1)
-        print transform(lines[r], hide_words),
-        raw_input()
-        for offset in range(1, nb_lines):
+        for offset in range(nb_lines):
             print lines[r + offset],
             raw_input()
         print
@@ -92,6 +91,6 @@ if __name__ == '__main__':
     print 'Learning %s' % filename
     print
     try:
-        learn_from_file(filename, args.nb_lines, args.verse, hide_words=True)
+        learn_from_file(filename, args.nb_lines, args.verse)
     except KeyboardInterrupt:
         print('\nGood job 👍 See you later !')
