@@ -6,6 +6,8 @@ Lyrics learner helps you memorize lyrics.
 python learn.py "my-lyrics.txt"
 ```
 
+Lyrics text files must be in the same directory as `learn.py`.
+
 ### Verses
 
 It can be useful to focus on a particular verse of the song. If you separate
